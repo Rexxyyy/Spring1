@@ -3,6 +3,7 @@ package com.ecom.demo.eecom.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ecom.demo.eecom.pojo.LoginApiDetails;
 
@@ -26,6 +27,11 @@ public class AuthService {
 	      return "check email or password";
 	    }
 	  }
+	
+	@PostMapping("v2/signup")
+	public String signup(@RequestParam) {
+		return;
+	}
 	
 	
 
