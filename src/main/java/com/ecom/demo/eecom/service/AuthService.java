@@ -3,7 +3,6 @@ package com.ecom.demo.eecom.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.ecom.demo.eecom.pojo.LoginApiDetails;
-
 import com.ecom.demo.eecom.pojo.signupApiDetails;
 
 @Service
@@ -25,11 +24,7 @@ public class AuthService {
     }
   }
 
-public String signup (@RequestBody signupApiDetails SignupApiDetails) {
-
-
-	
-	return "Verification email sent, please check";
-	
-}
+  public String signup(@RequestBody signupApiDetails SignupApiDetails) {
+    return "Verification email sent, please check";
+  }
 }

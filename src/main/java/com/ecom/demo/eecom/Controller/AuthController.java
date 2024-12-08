@@ -14,23 +14,18 @@ import java.security.Provider;
 @RestController
 public class AuthController {
 
-
-  @Autowired
-  public AuthService authService;
+  @Autowired public AuthService authService;
 
   @PostMapping("v2/login")
   public String login(@RequestBody LoginApiDetails loginApiDetails) {
-     String responseString= authService.login(loginApiDetails);
-      return responseString;
-    }
-  
+    String responseString = authService.login(loginApiDetails);
+    return responseString;
+  }
+
   @PostMapping("v2/signup")
-  public String signup(@RequestBody signupApiDetails SignupApiDaTA ) {
-      String signupResponseString=authService.signup(SignupApiDaTA);
-      
-      return signupResponseString ;
-  }
-  
-  }
+  public String signup(@RequestBody signupApiDetails SignupApiDaTA) {
+    String signupResponseString = authService.signup(SignupApiDaTA);
 
-
+    return signupResponseString;
+  }
+}
