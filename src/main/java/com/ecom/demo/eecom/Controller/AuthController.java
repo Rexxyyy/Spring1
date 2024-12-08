@@ -1,27 +1,36 @@
 package com.ecom.demo.eecom.Controller;
 
 import com.ecom.demo.eecom.pojo.LoginApiDetails;
+import com.ecom.demo.eecom.pojo.signupApiDetails;
+import com.ecom.demo.eecom.service.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.awt.JobAttributes.SidesType;
+import java.security.Provider;
+
 @RestController
 public class AuthController {
-  //    @PostMapping("v2/login")
-  //    public String login(@RequestBody LoginApiDetails loginApiDetails){
-  //        return "Under Development "+loginApiDetails.toString();
-  //    }
+
+
+  @Autowired
+  public AuthService authService;
 
   @PostMapping("v2/login")
   public String login(@RequestBody LoginApiDetails loginApiDetails) {
-    String dbEmail = "Anji@gmail.com";
-    String dbPassword = "Anji@123";
-
-    if (dbEmail.equals(loginApiDetails.getEmail())
-        && dbPassword.equals(loginApiDetails.getPassword())) {
-      return "Login Success";
-    } else {
-      return "check email or password";
+     String responseString= authService.login(loginApiDetails);
+      return responseString;
     }
+  
+  @PostMapping("v2/signup")
+  public String signup(@RequestBody signupApiDetails SignupApiDaTA ) {
+      String signupResponseString=authService.signup(SignupApiDaTA);
+      
+      return signupResponseString ;
   }
-}
+  
+  }
+
+
