@@ -7,48 +7,61 @@ import com.ecom.demo.eecom.service.AuthService;
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-
 
 @RestController
 public class AuthController {
 
-private AuthService authService;
-public AuthController(AuthService authService) {
-  this.authService = authService;
+  final AuthService authService;
+
+  public AuthController(AuthService authService) {
+    this.authService = authService;
   }
 
   @PostMapping("/v2/login")
-  public String login(@Valid @RequestBody LoginApiDetails loginApiDetails, BindingResult validationResult ) {
+  public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginApiDetails loginApiDetails,
+      BindingResult validationResult) {
 
-    System.out.println(validationResult.hasErrors());
+    if (validationResult.hasErrors()) { // if validation errors are present
 
-      if (validationResult.hasErrors()== true) {    //if validation errors are present
+      Map<String, String> errors = new HashMap<>(); // HashMap to store errors
 
-          Map<String, String> errors = new HashMap<>();       //HashMap to store errors
+      validationResult.getFieldErrors().forEach(error -> // getFieldErrors() + Lambda for each error
+      errors.put(error.getField(), error.getDefaultMessage()));// obj.put(key, value) });
 
-            validationResult.getFieldErrors().forEach(error->{  //getFieldErrors() + Lambda for each error
-            errors.put(error.getField(), error.getDefaultMessage()); //obj.put(key, value)
-            });
+      Map<String, Object> errorResponse = new HashMap<>(); // HashMap to store error response
+      errorResponse.put("Result", "Failed");
+      errorResponse.put("Error", errors);
+      errorResponse.put("Message", "Validation Error");
+      errorResponse.put("No of attempt", 6);
 
-            errors.put("result","Failed"); //putting result as failed
-    System.out.println(errors);  //printing errors in console for debugging
-    return errors.toString();  //returning errors
-    
-  } else{
-    String loginResponseString = authService.login(loginApiDetails); //
-    
-    Map<String, String> response = new HashMap<>(); 
-    response.put("loginresult", loginResponseString); //putting loginresult in response
-    response.put ("result", "Success");
-    return loginResponseString;
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+
+    } else {
+      String loginResponseString = authService.login(loginApiDetails); //
+
+      // Map to store success response
+      Map<String, Object> successResponse = new HashMap<>();
+      successResponse.put("login-result", loginResponseString); // putting loginresult in response
+      successResponse.put("result", "Success");
+
+      // returning success response
+      Map<String, Object> userDetails = new HashMap<>();
+      userDetails.put("name", "anji");
+      userDetails.put("email", loginApiDetails.getEmail());
+      userDetails.put("phone", "1234567890");
+      userDetails.put("address", "hyd");
+      userDetails.put("pincode", "500001");
+
+      successResponse.put("userDetails", userDetails);
+      return ResponseEntity.status(HttpStatus.OK).body(successResponse);
+    }
   }
-}
 
   @PostMapping("/v2/signup")
   public String signup(@RequestBody signupApiDetails SignupApiDaTA) {
