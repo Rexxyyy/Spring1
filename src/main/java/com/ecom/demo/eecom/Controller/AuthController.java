@@ -1,15 +1,23 @@
 package com.ecom.demo.eecom.Controller;
 
+import com.ecom.demo.eecom.entity.User;
+import com.ecom.demo.eecom.exceptions.InvalidPasswordException;
+import com.ecom.demo.eecom.exceptions.UserNotFoundException;
 import com.ecom.demo.eecom.pojo.LoginApiDetails;
 import com.ecom.demo.eecom.pojo.ResetApiDetails;
-import com.ecom.demo.eecom.pojo.signupApiDetails;
+import com.ecom.demo.eecom.pojo.SignUpApiData;
+import com.ecom.demo.eecom.pojo.ProfileUpdateApiData;
 import com.ecom.demo.eecom.service.AuthService;
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,14 +72,81 @@ public class AuthController {
   }
 
   @PostMapping("/v2/signup")
-  public String signup(@RequestBody signupApiDetails SignupApiDaTA) {
-    String signupResponseString = authService.signup(SignupApiDaTA);
-    return signupResponseString;
+  public Object signup(@RequestBody SignUpApiData signUpApiData) {
+    User newUser = authService.signup(signUpApiData);
+    return newUser;
   }
+
+  // Pojo(body)>conrtroller(call+object creation)>service>repository>db
 
   @PostMapping("/v2/resetPassword")
   public String resetPassword(@RequestBody ResetApiDetails resetApiDetails) {
     String resetResponseString = authService.resetPassword(resetApiDetails);
     return resetResponseString;
   }
+//UPDATE PASSWORD
+  @PostMapping("/password-update")
+  public ResponseEntity<Map<String, String>> passwordUpdate(@RequestBody ProfileUpdateApiData profileUpdateApiData) {
+
+    Map<String, String> responseMap = new HashMap<>();
+    try {
+      authService.passwordUpdate(profileUpdateApiData);
+      responseMap.put("Result", "true");
+      responseMap.put("Message", "Pasword updated successfully");
+      return ResponseEntity.ok(responseMap);
+    } catch (UserNotFoundException e) {
+      responseMap.put("Result", "false");
+      responseMap.put("Message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMap);
+
+    } catch (InvalidPasswordException e) {
+      responseMap.put("Result", "false");
+      responseMap.put("Message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+    } catch (Exception e) {
+      responseMap.put("Result", "false");
+      responseMap.put("Message", "Something went wrong");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMap);
+    }
+  }
+// UPDATE NAME
+  @PostMapping("/name-update")
+  public Map<String, String> nameUpdate(@RequestBody ProfileUpdateApiData profileUpdateApiData) {
+
+    Boolean updateResponse = authService.nameUpdate(profileUpdateApiData);
+    Map<String, String> responseMap = new HashMap<>();
+    if (updateResponse == true) {
+      responseMap.put("Result", "true");
+      responseMap.put("Message", "Name updated successfully");
+    } else {
+      responseMap.put("Result", "false");
+      responseMap.put("Message", "User not found");
+    }
+    return responseMap;
+
+  }
+
+  // GET USER DETAILS
+
+  @GetMapping("user/{id}")
+  public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable int id) {
+    Optional<User> dataOptional = authService.getUserDetails(id);
+
+    Map<String, Object> responseMap = new HashMap<>();
+
+    if (dataOptional.isPresent()) {
+      responseMap.put("Result", "Success");
+      responseMap.put("Message", "User found");
+      responseMap.put("Data", dataOptional.get());
+      return ResponseEntity.ok(responseMap);
+    } else {
+      responseMap.put("Result", "Failed");
+      responseMap.put("Message", "User not found");
+      responseMap.put("Data", null);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMap);
+
+    }
+
+  }
+
 }
