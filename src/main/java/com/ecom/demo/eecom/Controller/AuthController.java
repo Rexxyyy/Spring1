@@ -1,21 +1,27 @@
 package com.ecom.demo.eecom.Controller;
 
 import com.ecom.demo.eecom.entity.User;
+import com.ecom.demo.eecom.exceptions.GobalExceptions;
 import com.ecom.demo.eecom.exceptions.InvalidPasswordException;
 import com.ecom.demo.eecom.exceptions.UserNotFoundException;
 import com.ecom.demo.eecom.pojo.LoginApiDetails;
 import com.ecom.demo.eecom.pojo.ResetApiDetails;
 import com.ecom.demo.eecom.pojo.SignUpApiData;
+import com.ecom.demo.eecom.repository.UserRepository;
 import com.ecom.demo.eecom.pojo.ProfileUpdateApiData;
 import com.ecom.demo.eecom.service.AuthService;
+import com.ecom.demo.eecom.pojo.GetUserByEmailApiData;
+
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +36,8 @@ public class AuthController {
   public AuthController(AuthService authService) {
     this.authService = authService;
   }
+
+  @Autowired GobalExceptions exceptions;
 
   @PostMapping("/v2/login")
   public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginApiDetails loginApiDetails,
@@ -148,5 +156,30 @@ public class AuthController {
     }
 
   }
+@Autowired UserRepository userRepository;
+
+  @PostMapping("/get-user-by-email")
+  public Object getUserByEmail(@RequestBody GetUserByEmailApiData getUserByEmailApiData) {
+    return  authService.getUserByEmail(getUserByEmailApiData);
+  }
+  
+
+
+
+
+  @PostMapping("loginWithQuery")
+  public Object loginWithSqlQuery(@RequestBody @Valid LoginApiDetails loginApiDetails) {
+    return authService.loginWithSqlQuery(loginApiDetails);
+  }
+
+
+
+
+
+  @PostMapping("login2")
+  public  Object login2(@RequestBody @Valid LoginApiDetails loginApiDetails){
+  return authService.login2(loginApiDetails);
+  }
+
 
 }

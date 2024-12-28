@@ -1,13 +1,13 @@
 package com.ecom.demo.eecom.service;
 
+import com.ecom.demo.eecom.pojo.GetUserByEmailApiData;
 import com.ecom.demo.eecom.pojo.ResetApiDetails;
 import com.ecom.demo.eecom.pojo.SignUpApiData;
 import com.ecom.demo.eecom.repository.UserRepository;
-
+import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.ecom.demo.eecom.entity.User;
 import com.ecom.demo.eecom.exceptions.InvalidPasswordException;
 import com.ecom.demo.eecom.exceptions.UserNotFoundException;
@@ -71,9 +71,13 @@ public class AuthService {
   }
 
   // GET USER DETAILS
-  public Optional<User> getUserDetails(int id) {
+  public Object getUserDetails(int id) {
     Optional<User> dbResponse = userRepository.findById(id);
-    return dbResponse;
+    if (dbResponse.isEmpty()) {
+      return "Invalid email and Password";
+    } else {
+      return dbResponse.get();
+    }
   }
 
   public boolean nameUpdate(ProfileUpdateApiData profileUpdateApiData) {
@@ -91,6 +95,37 @@ public class AuthService {
 
   public String resetPassword(ResetApiDetails resetApiDetails) {
     return "If account with this email exits, resetPassword instruction will be sent, please check email";
+  }
+
+  public Object getUserByEmail(GetUserByEmailApiData getUserByEmailApiData) {
+
+    Optional<User> dbData = userRepository.findByEmail(getUserByEmailApiData.getEmail());
+    if (dbData.isPresent()) {
+      return dbData.get();
+    } else {
+      return "User not found";
+    }
+  }
+
+  @Transactional
+  public Object login2(LoginApiDetails loginApiDetails) {
+    Optional<User> dbResponse = userRepository.dbLoginWithStoredProcedure(loginApiDetails.getEmail(),
+        loginApiDetails.getPassword());
+    return dbResponse;
+
+  }
+
+  @Transactional
+  public Object loginWithSqlQuery(LoginApiDetails loginApiDetails) {
+    Optional<User> dbData = userRepository.dbLoginWithStoredProcedure(loginApiDetails.getEmail(),
+        loginApiDetails.getPassword());
+    if (dbData.isPresent()) {
+      return dbData.get();
+    } else {
+      return "User not found";
+
+    }
+
   }
 
 }
