@@ -4,15 +4,10 @@ import com.ecom.demo.eecom.pojo.GetUserByEmailApiData;
 import com.ecom.demo.eecom.pojo.ResetApiDetails;
 import com.ecom.demo.eecom.pojo.SignUpApiData;
 import com.ecom.demo.eecom.repository.UserRepository;
-
 import jakarta.transaction.Transactional;
-
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
 import com.ecom.demo.eecom.entity.User;
 import com.ecom.demo.eecom.exceptions.InvalidPasswordException;
 import com.ecom.demo.eecom.exceptions.UserNotFoundException;
