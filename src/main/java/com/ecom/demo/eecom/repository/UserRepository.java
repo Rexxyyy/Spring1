@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
     // Custom SQL query for login
-    @Query(value = "SELECT * FROM user WHERE email = :emailId AND password = :pword", nativeQuery = true)
+    @Query(value = "SELECT * FROM user WHERE email = :email AND password = :password", nativeQuery = true)
     Optional<User> dbLoginWithQuery(@Param("email") String email, @Param("password") String password);
 
 

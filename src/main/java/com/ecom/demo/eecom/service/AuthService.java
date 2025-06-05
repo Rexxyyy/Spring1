@@ -117,8 +117,8 @@ public class AuthService {
 
   @Transactional
   public Object loginWithSqlQuery(LoginApiDetails loginApiDetails) {
-    Optional<User> dbData = userRepository.dbLoginWithStoredProcedure(loginApiDetails.getEmail(),
-        loginApiDetails.getPassword());
+    Optional<User> dbData =
+        userRepository.dbLoginWithQuery(loginApiDetails.getEmail(), loginApiDetails.getPassword());
     if (dbData.isPresent()) {
       return dbData.get();
     } else {
